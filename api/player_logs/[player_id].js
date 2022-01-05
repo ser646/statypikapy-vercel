@@ -109,7 +109,11 @@ module.exports = async (req, res) => {
                     }
                     }
                 }
-            ]).toArray((cmdErr, result) => {
+            ],
+            { 
+                allowDiskUse: true
+            },
+            ).toArray((cmdErr, result) => {
                 if(cmdErr){
                     console.log(cmdErr)
                     res.status(400).json({status: "Failure", err: cmdErr})
