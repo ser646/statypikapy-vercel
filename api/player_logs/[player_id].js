@@ -109,13 +109,13 @@ module.exports = async (req, res) => {
                     }
                     }
                 }
-            ]).allowDiskUse(true).toArray((cmdErr, result) => {
+            ]).toArray((cmdErr, result) => {
                 if(cmdErr){
                     console.log(cmdErr)
                     res.status(400).json({status: "Failure", err: cmdErr})
                 }
                 else res.status(200).json(result)
-            });
+            }).allowDiskUse(true);
         }
         else res.status(400).json({status: "Failure", err: "Wrong query parameter/s "})
     }
