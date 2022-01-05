@@ -109,7 +109,7 @@ module.exports = async (req, res) => {
                     }
                     }
                 }
-            ],{ allowDiskUse: true }
+            ],{allowDiskUse: true}
             ).toArray((cmdErr, result) => {
                 if(cmdErr){
                     console.log(cmdErr)
