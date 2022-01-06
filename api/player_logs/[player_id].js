@@ -9,6 +9,8 @@ module.exports = async (req, res) => {
       query: { player_id },
     } = req
     let time_range = req.query["time_range"];
+    let limit = req.query["limit"] || 5000;
+    let offset = req.query["offset"] || 0;
 
     if(req.method == "GET"){ 
         if(!time_range) time_range = "all"
@@ -35,6 +37,8 @@ module.exports = async (req, res) => {
                     }
                     }
                 },
+                { '$skip': offset },
+                { '$limit': limit },
                 {
                     '$sort': {
                         'info.date': -1
@@ -109,7 +113,7 @@ module.exports = async (req, res) => {
                     }
                     }
                 }
-            ],{allowDiskUse: true}
+            ],{ allowDiskUse: true }
             ).toArray((cmdErr, result) => {
                 if(cmdErr){
                     console.log(cmdErr)
