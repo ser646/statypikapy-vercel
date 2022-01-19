@@ -1,4 +1,3 @@
-
 //Vue.config.devtools = true;
 Vue.config.devtools = false;
 
@@ -14,7 +13,7 @@ $('#scoreboard').flowtype({
     minFont   : 13,
     maxFont   : 16
 });
-$('#player_logs_list').flowtype({
+$('#chart_buttons').flowtype({
     minFont   : 13,
     maxFont   : 16
 });
@@ -145,7 +144,8 @@ var app = new Vue({
     vuetify: new Vuetify(),
     components: {
         'log': log,
-        'hof-card' : hof_card 
+        'hof-card' : hof_card,
+        'apexchart': VueApexCharts
     },
     data: {
         active_panel: 'score', //logs, score
@@ -155,9 +155,94 @@ var app = new Vue({
         logs_last_sort : false,
         scores_last_sort: false,
         loading: true,
+        fully_loaded: false,
         selected_player: false,
         filter_by_map: '',
         filter_by_class: '',
+        chart_filter_class: 'all',
+        chart_data_label: 'Kills',
+        chart_data_limit: 100,
+        chart_data:{
+            Kills: [],
+            Dpm:[],
+            Damage:[]
+        },
+        chart_series: [{
+            name: '',
+            data: []
+        }],
+        chart_options: {
+            chart: {
+                type: 'line',
+                toolbar: {
+                    tools: {
+                        download: false,
+                        customIcons: [{
+                            icon: '<div>All</div>',
+                            title: 'Show all logs',
+                            class: 'chart-custom-icon',
+                            click: function (chart, options, e) {
+                                app.chart_data_limit = 0
+                            }
+                        },
+                        {
+                            icon: '<div>50</div>',
+                            title: 'Show last 50 logs',
+                            class: 'chart-custom-icon',
+                            click: function (chart, options, e) {
+                                app.chart_data_limit = 50
+                            }
+                        },
+                        {
+                            icon: '<div>100</div>',
+                            title: 'Show last 100 logs',
+                            class: 'chart-custom-icon',
+                            click: function (chart, options, e) {
+                                app.chart_data_limit = 100
+                            }
+                        }]
+                    }
+                }
+            },
+            noData: {
+                text:"No data",
+                style:{
+                    fontFamily: "Roboto,sans-serif;"
+                }
+            },
+            xaxis: {
+                labels: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                },
+                tooltip:{
+                    enabled: false
+                },
+                tickAmount: 100
+            },
+            dataLabels: {
+                enabled: false
+            },
+            markers: {
+                size: 3,
+            },
+            fill: {
+                opacity: 0,
+                type: 'solid'
+            },
+            tooltip: {
+                x: {
+                    show: false
+                },
+            },
+            stroke: {
+                show: true,
+                curve: 'straight',
+                width: 2
+            }
+        },
         downloaded:{
             weekly : {
                 scores : false,
@@ -187,14 +272,32 @@ var app = new Vue({
             }
         }
     },
-    methods: {
+    methods: {   
+        change_chart_data: function(str){
+            let limit = Number(app.chart_data_limit)
+            let d;
+            d = app.chart_data[app.chart_filter_class][str]
+            if(limit)d = d.slice(0, limit);
+            d.reverse();
+            app.chart_series = [{
+                name: str,
+                data: d
+            }]  
+
+        },
         update : function (){
             fetch(uri+'/logs/diff').then(r => r.json()).then(r => {
                 app.logs_to_download = r;
                 app.logs_to_download_total = r.length
                 if(r.length > 0)
                     for(i = 0;i<r.length;i++)app.downloadLog(r[i])
-                else {app.main();document.getElementById('update_info').innerText='All logs up to date!';console.log('All logs up to date!')};
+                else {
+                    app.main();
+                    document.getElementById('update_info').innerText='All logs up to date!';
+                    console.log('All logs up to date!')
+                    app.fully_loaded = true
+
+                };
             })
         },
         changeTimeRange : function(event){
@@ -283,7 +386,6 @@ var app = new Vue({
                 this.logs_time_range = hash[1];
                 this.active_panel = hash[2];
                 this.selected_player = hash[3];
-                console.log(hash[2])
             }
             else {
                 window.location.hash = `/${store.state.logs_time_range}/${this.active_panel}`
@@ -346,7 +448,8 @@ var app = new Vue({
                             app.scores_last_sort='score';
                             this.loading = false;
                             if(r.length == 0)r = false;     
-                            this.downloaded[store.state.logs_time_range].scores = r;           
+                            this.downloaded[store.state.logs_time_range].scores = r;  
+     
                             return r;
                         })
                     }
@@ -356,16 +459,98 @@ var app = new Vue({
         },
         player_logs : function(){
             if(this.selected_player){
+                
                 //if(!this.downloaded[store.state.logs_time_range].player_logs[this.selected_player]){
                     this.loading = true;
+
+                    //chart stuff
+                    app.chart_series = []
+                    //chart stuff
+
+                    $("#avatar").hide();
+                    fetch(uri + '/profile/steam/'+this.selected_player)
+                    .then(r => r.json())
+                    .then(r => {
+                        imageUrl = r[0].avatar
+                        imageUrl = imageUrl.slice(0, -4) + "_full" + imageUrl.slice(-4);
+                        $("#avatar").css("background-image", "url(" + imageUrl + ")");
+                        $("#avatar").on("click",function() {
+                            window.open( r[0].profileurl, '_blank');
+                        });
+                        $("#avatar").show();
+                    })
+
+                    fetch(uri + '/profile/pr/'+this.selected_player+'&time_range='+store.state.logs_time_range)
+                    .then(r => r.json())
+                    .then(r => {
+                        let prs  = $(".pr")
+                        prs[0].innerText = r.maxKills
+                        prs[1].innerText = r.maxDmg
+                        prs[2].innerText = r.maxDpm
+                        prs[3].innerText = r.maxKpd
+                    })
+                    
                     return fetch(uri + '/player_logs/'+this.selected_player+'?time_range='+store.state.logs_time_range).then(r => r.json()).then(r => {
                         this.logs_last_sort = false;
                         this.loading = false;
                         if(r.length == 0)r = false;  
                         this.downloaded[store.state.logs_time_range].player_logs[this.selected_player] = r;
                         app.logs_last_sort='date' ;
+
+                        //chart stuff
+                        app.chart_data = {
+                            all:{
+                                Kills : [],
+                                Dpm : [],
+                                Damage : []
+                            },
+                            scout:{
+                                Kills : [],
+                                Dpm : [],
+                                Damage : []
+                            },
+                            soldier:{
+                                Kills : [],
+                                Dpm : [],
+                                Damage : []
+                            },
+                            demoman:{
+                                Kills : [],
+                                Dpm : [],
+                                Damage : []
+                            },
+                            medic:{
+                                Kills : [],
+                                Dpm : [],
+                                Damage : []
+                            },
+                        };
+                        for(log of r){
+                            let d = app.chart_data['all']
+                            d.Kills.push(log.stats.kills)
+                            d.Dpm.push(log.stats.dapm)
+                            d.Damage.push(log.stats.dmg)
+
+                            
+                            if(app.chart_data[log.classes[0]]){
+                                d = app.chart_data[log.classes[0]]
+                                d.Kills.push(log.stats.kills)
+                                d.Dpm.push(log.stats.dapm)
+                                d.Damage.push(log.stats.dmg)
+                            }
+                        }
+
+                        if($('#chart_buttons :input:checked')[0])
+                            this.change_chart_data($('#chart_buttons :input:checked')[0].value);
+                        else {
+                            $('#chart_buttons :input').eq(0).prop("checked", true)
+                            this.change_chart_data($('#chart_buttons :input:checked')[0].value);
+                        }
+                        //chart stuff
+
                         return r;
                     })
+                    
                 //}
                 //else return this.downloaded[store.state.logs_time_range].player_logs[this.selected_player]
             }
@@ -401,6 +586,15 @@ var app = new Vue({
         },
         active_panel : function(str) {
                 
+        },
+        chart_data_label: function(str) {
+            this.change_chart_data(str)
+        },
+        chart_data_limit: function(str){
+            this.change_chart_data($('#chart_buttons :input:checked')[0].value);
+        },
+        chart_filter_class: function() {
+            this.change_chart_data($('#chart_buttons :input:checked')[0].value);
         },
         selected_player : function(str) {
                 hash = window.location.hash.split('/');hash[0] = '#';

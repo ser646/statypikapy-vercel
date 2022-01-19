@@ -7,8 +7,8 @@
 	<link rel="icon" type="image/png" href="favicon.svg">
 	<title>Staty pikapy</title>
 
-	<script src="//code.jquery.com/jquery-latest.min.js"></script>
-	<script src="js/flowtype.js"></script>
+	<script src="/js/jquery-latest.min.js"></script>
+	<script src="/js/flowtype.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
 	<script src="https://unpkg.com/vue-async-computed@3.8.1"></script>
@@ -17,6 +17,10 @@
 	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
   	<link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+	
+	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue-apexcharts"></script>
+
 	<link type="text/css" href="css/style.css" rel="stylesheet">
 	<link type="text/css" href="css/loader.css" rel="stylesheet">
 </head>
@@ -26,14 +30,20 @@
 		<div v-if='loading' id='loader' style='position: fixed;' class='loader'></div>
 		<nav>
 			<div>
-				<input id='radio_weekly' type='radio' name='nav_radio_time'  v-model="logs_time_range" value='weekly' @click='changeTimeRange'/><label for='radio_weekly' class='softui hover'>Weekly</label>
-				<input id='radio_monthly' type='radio' name='nav_radio_time' v-model="logs_time_range" value='monthly' @click='changeTimeRange'/><label for='radio_monthly' class='softui hover'>Monthly</label>
-				<input id='radio_all' type='radio' name='nav_radio_time' v-model="logs_time_range" value='all' @click='changeTimeRange'/><label for='radio_all' class='softui hover'>All</label>
+				<input id='radio_weekly' type='radio' name='nav_radio_time'  v-model="logs_time_range" value='weekly' @click='changeTimeRange'/>
+				<label for='radio_weekly' class='softui hover'>Weekly</label>
+				<input id='radio_monthly' type='radio' name='nav_radio_time' v-model="logs_time_range" value='monthly' @click='changeTimeRange'/>
+				<label for='radio_monthly' class='softui hover'>Monthly</label>
+				<input id='radio_all' type='radio' name='nav_radio_time' v-model="logs_time_range" value='all' @click='changeTimeRange'/>
+				<label for='radio_all' class='softui hover'>All</label>
 			</div>
 			<div>
-				<input id='radio_score' type='radio' name='nav_radio_type' v-model="active_panel" value='score'/><label for='radio_score' class='softui hover'>Players</label>
-				<input id='radio_logs' type='radio' name='nav_radio_type'  v-model="active_panel" value='logs'/><label for='radio_logs' class='softui hover'>Logs</label>
-				<input id='radio_hof' type='radio' name='nav_radio_type'  v-model="active_panel" value='hof'/><label for='radio_hof' class='softui hover'>HoF</label>
+				<input id='radio_score' type='radio' name='nav_radio_type' v-model="active_panel" value='score'/>
+				<label for='radio_score' class='softui hover'>Players</label>
+				<input id='radio_logs' type='radio' name='nav_radio_type'  v-model="active_panel" value='logs'/>
+				<label for='radio_logs' class='softui hover'>Logs</label>
+				<input id='radio_hof' type='radio' name='nav_radio_type'  v-model="active_panel" value='hof'/>
+				<label for='radio_hof' class='softui hover'>HoF</label>
 			</div>
 			<div>
 				<button v-show='selected_player && active_panel=="score"' class='softui hover selected' type='button'  :value='selected_player + "xD"' @click='selected_player=false'>
@@ -82,8 +92,51 @@
 						<div>{{player[1].score}}</div>
 					</div>  
 				</div>
-				<div id='player_logs_list' class='panel' v-show='active_panel=="score" && selected_player'>
-					<div id='player_logs_head' class='d-flex'>
+				<div id='player_logs_list' class='panel' v-show='active_panel=="score" && selected_player' >
+					<div id="profile_prs_avatar" v-show="fully_loaded && !loading">
+						<div>
+							<div>
+								<h4>Most kills</h4>
+								<h4 class="pr"></h4>
+							</div>
+							<div>
+								<h4>Most dmg</h4>
+								<h4 class="pr"></h4>
+							</div>
+						</div>
+						<div id="avatar"></div>	
+						<div>
+							<div>
+								<h4>Highest DPM</h4>
+								<h4 class="pr"></h4>
+							</div>
+							<div>
+								<h4>Highest K/D</h4>
+								<h4 class="pr"></h4>
+							</div>
+						</div>
+					</div>
+					<div id="chart_things" v-show="fully_loaded && !loading">
+						<div id='chart_class_filters' class='d-flex'>
+							<label><input checked type="radio" v-model='chart_filter_class' value='all'><i class='allClasses'></i></label>
+							<label><input type="radio" v-model='chart_filter_class' value='scout'><i class='scout'></i></label>
+							<label><input type="radio" v-model='chart_filter_class' value='soldier'><i class='soldier'></i></label>
+							<label><input type="radio" v-model='chart_filter_class' value='demoman'><i class='demoman'></i></label>
+							<label><input type="radio" v-model='chart_filter_class' value='medic'><i class='medic'></i></label>
+						</div>
+						<div id ="chart_buttons">
+							<input checked id="chart_kills" v-model='chart_data_label' type='radio' name='nav_radio_type' value="Kills"/>
+							<label for="chart_kills" class='softui hover'>Kills</label>
+							<input id="chart_dpm" v-model='chart_data_label' type='radio' name='nav_radio_type' value="Dpm"/>
+							<label for="chart_dpm" class='softui hover'>DPM</label>
+							<input id="chart_damage" v-model='chart_data_label' type='radio' name='nav_radio_type' value="Damage"/>
+							<label for="chart_damage" class='softui hover'>Damage</label>
+						</div>			
+					</div>
+					<div id="chart">
+						<apexchart type="area" height="200" :options="chart_options" :series="chart_series"></apexchart>
+					</div>
+					<div id='player_logs_head' class='d-flex' v-show="fully_loaded && !loading">
 						<div class='tooltip-container'>
 							Map
 							<v-icon x-small >mdi-filter</v-icon>
@@ -252,7 +305,7 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 </script>
-<script src="js/main.js"></script>
+<script src="/js/main.js"></script>
 
 </body>
 </html>

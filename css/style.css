@@ -23,10 +23,11 @@ html,main,body,.v-tabs,.v-tab,.v-tabs-bar,.v-application--wrap {
 .clickable{
     cursor:pointer
 }
-nav input[type="radio"],#class_filters input[type="radio"]{
+input[type="radio"],#class_filters input[type="radio"]{
     display: none;
 }
-nav input[type="radio"]:checked+label,.selected { 
+
+input[type="radio"]:checked+label,.selected { 
     box-shadow: inset 2px 2px 6px #d9d9d9, inset -2px -2px 0px #ffffff!important;
 }
 nav{
@@ -42,7 +43,13 @@ nav div {
     display: flex;
     margin: 10px 0px;
 }
-nav label,button {
+
+#chart_buttons {
+    display: flex;
+    margin: 10px 0px;
+}
+
+#chart_buttons label,nav label,button {
     padding: 0px 10px;
     background: #fbfbfc;
     width: 90px;
@@ -56,17 +63,17 @@ button{
     border-radius: 10px!important;
     width: max-content;
 }
-nav label{
+#chart_buttons label, nav label{
     margin: 0px;
     border-radius: 0px;
 }
 
-nav label:last-of-type{
+#chart_buttons label:last-of-type,nav label:last-of-type{
     border-bottom-right-radius: 10px!important;
     border-top-right-radius: 10px!important;
 }
 
-nav label:first-of-type{
+#chart_buttons label:first-of-type,nav label:first-of-type{
     border-bottom-left-radius: 10px!important;
     border-top-left-radius: 10px!important;
 }
@@ -329,15 +336,23 @@ i:not(:first-child){
 .tooltip-container:hover .tooltip,.tooltip:hover{
     visibility: visible;
 }
-#class_filters{
+
+#class_filters,#chart_class_filters{
     width: 150px;
     justify-content: space-around;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     padding: 5px;
 }
-#class_filters input[type="radio"]:checked+i { 
+#class_filters input[type="radio"]:checked+i,
+#chart_class_filters input[type="radio"]:checked+i{ 
     background-image: url('../assets/classes.png')
+}
+
+#chart_things{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #hall_of_fame h3{
@@ -444,3 +459,30 @@ a:hover {text-decoration: underline;}
 .bg-red {background-color: #ffb3b3;}
 .bg-grey {background-color: #80808047;}
 
+#avatar {
+    height: 100px;
+    width: 100px;
+    background-size: contain;
+}
+
+#profile_prs_avatar {
+    justify-content: center;
+    display:flex
+}
+
+#profile_prs_avatar div:not(#avatar){
+    width: 160px;
+}
+
+#profile_prs_avatar h4{
+    font-weight: 400;
+}
+
+.chart-custom-icon {
+    margin-left: 4px;
+}
+
+.apexcharts-toolbar{
+    max-width: fit-content!important;
+    right: 10px!important;
+}

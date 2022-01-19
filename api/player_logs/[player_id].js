@@ -26,19 +26,19 @@ module.exports = async (req, res) => {
             db.collection('logs').aggregate([
                 {
                     '$match': {
-                    ['players.'+p_id]: {
-                        '$exists': true
-                    }, 
-                    'info.date': {
-                        '$gt': z / 1000
-                    }, 
-                    'players_count': {
-                        '$lt': 15
-                    }
+                        ['players.'+p_id]: {
+                            '$exists': true
+                        }, 
+                        'info.date': {
+                            '$gt': z / 1000
+                        }, 
+                        'players_count': {
+                            '$lt': 15
+                        }
                     }
                 },
-                { '$skip': offset },
-                { '$limit': limit },
+                { '$skip': Number(offset) },
+                { '$limit': Number(limit) },
                 {
                     '$sort': {
                         'info.date': -1
