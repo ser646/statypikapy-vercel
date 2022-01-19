@@ -480,7 +480,7 @@ var app = new Vue({
                         $("#avatar").show();
                     })
 
-                    fetch(uri + '/profile/pr/'+this.selected_player+'&time_range='+store.state.logs_time_range)
+                    fetch(uri + '/profile/pr/'+this.selected_player+'?time_range='+store.state.logs_time_range)
                     .then(r => r.json())
                     .then(r => {
                         let prs  = $(".pr")
