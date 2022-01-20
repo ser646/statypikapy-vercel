@@ -1,8 +1,8 @@
 //Vue.config.devtools = true;
 Vue.config.devtools = false;
 
-const uri = "https://statypikapy.vercel.app/api";
-//const uri = "http://localhost:3000/api";
+//const uri = "https://statypikapy.vercel.app/api";
+const uri = "http://localhost:3000/api";
 
 $('#logs_list').flowtype({
     minFont   : 13,

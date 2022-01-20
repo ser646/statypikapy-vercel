@@ -60,7 +60,11 @@ module.exports = async (req, res) => {
                 }, 
                 'class_stats': '$players_arr.v.class_stats',
                 'map': '$map', 
-                'value': `$players_arr.v.${param}`
+                'value': {'$convert': {
+                    'input': `$players_arr.v.${param}`, 
+                    'to': 'double'
+                  }
+                }
             }
             }, {
             '$project': {
