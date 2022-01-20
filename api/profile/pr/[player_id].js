@@ -57,7 +57,12 @@ module.exports = async (req, res) => {
                         '$max': '$dmg'
                     }, 
                     'maxKpd': {
-                        '$max': '$kpd'
+                        '$max': {
+                            '$convert': {
+                              'input': '$kpd', 
+                              'to': 'double'
+                            }
+                        }
                     }
                     }
                 }
