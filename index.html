@@ -94,7 +94,7 @@
 					</div>  
 				</div>
 				<div id='player_logs_list' class='panel' v-show='active_panel=="score" && selected_player' >
-					<div id="profile_prs_avatar" v-show="fully_loaded && !loading">
+					<div id="profile_prs_avatar">
 						<div>
 							<div>
 								<h4>Most kills</h4>
@@ -117,7 +117,7 @@
 							</div>
 						</div>
 					</div>
-					<div id="chart_things" v-show="fully_loaded && !loading">
+					<div id="chart_things" >
 						<div id='chart_class_filters' class='d-flex'>
 							<label><input checked type="radio" v-model='chart_filter_class' value='all'><i class='allClasses'></i></label>
 							<label><input type="radio" v-model='chart_filter_class' value='scout'><i class='scout'></i></label>

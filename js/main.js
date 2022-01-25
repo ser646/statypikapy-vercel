@@ -191,6 +191,7 @@ var app = new Vue({
                             class: 'chart-custom-icon',
                             click: function (chart, options, e) {
                                 app.chart_data_limit = 50
+
                             }
                         },
                         {
@@ -275,6 +276,7 @@ var app = new Vue({
     methods: {   
         change_chart_data: function(str){
             let limit = Number(app.chart_data_limit)
+
             let d;
             d = app.chart_data[app.chart_filter_class][str]
             if(limit)d = d.slice(0, limit);
@@ -283,7 +285,6 @@ var app = new Vue({
                 name: str,
                 data: d
             }]  
-
         },
         update : function (){
             fetch(uri+'/logs/diff').then(r => r.json()).then(r => {
