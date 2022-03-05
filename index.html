@@ -126,16 +126,17 @@
 							<label><input type="radio" v-model='chart_filter_class' value='medic'><i class='medic'></i></label>
 						</div>
 						<div id ="chart_buttons">
-							<input checked id="chart_kills" v-model='chart_data_label' type='radio' name='nav_radio_type' value="Kills"/>
+							<input checked id="chart_kills" v-model='chart_data_label' type='radio' value="Kills"/>
 							<label for="chart_kills" class='softui hover'>Kills</label>
-							<input id="chart_dpm" v-model='chart_data_label' type='radio' name='nav_radio_type' value="Dpm"/>
+							<input id="chart_dpm" v-model='chart_data_label' type='radio' value="Dpm"/>
 							<label for="chart_dpm" class='softui hover'>DPM</label>
-							<input id="chart_damage" v-model='chart_data_label' type='radio' name='nav_radio_type' value="Damage"/>
+							<input id="chart_damage" v-model='chart_data_label' type='radio' value="Damage"/>
 							<label for="chart_damage" class='softui hover'>Damage</label>
 						</div>			
 					</div>
 					<div id="chart">
 						<apexchart type="area" height="200" :options="chart_options" :series="chart_series"></apexchart>
+						<p id="chart_avg">Average: </p>
 					</div>
 					<div id='player_logs_head' class='d-flex' v-show="fully_loaded && !loading">
 						<div class='tooltip-container'>

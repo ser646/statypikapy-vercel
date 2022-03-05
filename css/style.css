@@ -44,12 +44,21 @@ nav div {
     margin: 10px 0px;
 }
 
-#chart_buttons {
+#chart {
+    height: 220px;  
+}
+
+#chart_avg {
+    position: relative;
+    bottom: 25px;
+}
+
+#chart_buttons, #pr_buttons{
     display: flex;
     margin: 10px 0px;
 }
 
-#chart_buttons label,nav label,button {
+#chart_buttons label,nav label,button ,#pr_buttons label{
     padding: 0px 10px;
     background: #fbfbfc;
     width: 90px;
@@ -63,17 +72,17 @@ button{
     border-radius: 10px!important;
     width: max-content;
 }
-#chart_buttons label, nav label{
+#chart_buttons label, nav label, #pr_buttons label{
     margin: 0px;
     border-radius: 0px;
 }
 
-#chart_buttons label:last-of-type,nav label:last-of-type{
+#chart_buttons label:last-of-type,nav label:last-of-type, #pr_buttons label:last-of-type{
     border-bottom-right-radius: 10px!important;
     border-top-right-radius: 10px!important;
 }
 
-#chart_buttons label:first-of-type,nav label:first-of-type{
+#chart_buttons label:first-of-type,nav label:first-of-type, #pr_buttons label:first-of-type{
     border-bottom-left-radius: 10px!important;
     border-top-left-radius: 10px!important;
 }
@@ -349,7 +358,7 @@ i:not(:first-child){
     background-image: url('../assets/classes.png')
 }
 
-#chart_things{
+#chart_things, #pr_buttons{
     display: flex;
     align-items: center;
     justify-content: center;

@@ -281,6 +281,12 @@ var app = new Vue({
             d = app.chart_data[app.chart_filter_class][str]
             if(limit)d = d.slice(0, limit);
             d.reverse();
+            let avg = 0;
+            for(e of d){
+                avg += e;
+            }
+            avg = (avg/d.length).toFixed(0);
+            $("#chart_avg").text(`Average: ${avg}`)
             app.chart_series = [{
                 name: str,
                 data: d
@@ -484,11 +490,12 @@ var app = new Vue({
                     fetch(uri + '/profile/pr/'+this.selected_player+'?time_range='+store.state.logs_time_range)
                     .then(r => r.json())
                     .then(r => {
-                        let prs  = $(".pr")
+                        let prs = $(".pr")
                         prs[0].innerText = r.maxKills
                         prs[1].innerText = r.maxDmg
                         prs[2].innerText = r.maxDpm
                         prs[3].innerText = r.maxKpd
+
                     })
                     
                     return fetch(uri + '/player_logs/'+this.selected_player+'?time_range='+store.state.logs_time_range).then(r => r.json()).then(r => {
