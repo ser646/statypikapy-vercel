@@ -448,9 +448,13 @@ var app = new Vue({
                     if(!this.downloaded[store.state.logs_time_range].scores){
                         this.loading = true;
                         return fetch(uri + '/scores/'+store.state.logs_time_range).then(r => r.json()).then(r => {
-                            for(p_id in r){
+                            /*for(p_id in r){
                                 r[p_id].score = (r[p_id].games_won*2) - (r[p_id].games_lost*2) + (r[p_id].games_tied)
+                            }*/
+                            for(p_id in r){
+                                r[p_id].score = (r[p_id].games_won*2) - (r[p_id].games_lost*2)
                             }
+                            //testowo 0 pkt za remis
                             r = sortObject(r,'score')
                             app.scores_last_sort='score';
                             this.loading = false;
