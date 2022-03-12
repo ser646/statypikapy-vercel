@@ -80,7 +80,10 @@
 						<div @click="sortScores('games_won')" title='Won'>W</div>
 						<div @click="sortScores('games_lost')" title='Lost'>L</div>
 						<div @click="sortScores('games_tied')" title='Tied'>T</div>
-						<div @click="sortScores('score')" title='Score: (win: 2p, draw: 0p, lose: -2p)'>S</div> <!-- testowo 0p za remis-->
+						<div @click="sortScores('score')" title='Score: (win: 2p, draw: 1p, lose: -2p)'>
+							S
+							<input type="button" value='+' title="Score tied games">
+						</div>
 					</div>
 					<div v-for='(player,idx) in scores' :key="idx" class='score-wrap d-flex clickable softui hover' :class='selected_player == player[0] ? "selected" : ""' :data-sid='player[0]' @click='selectPlayer(player[0])'>
 						<div>{{idx + 1}}</div>

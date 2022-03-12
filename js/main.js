@@ -361,21 +361,41 @@ var app = new Vue({
             app.logs_last_sort = param;
         },
         sortScores : function (param) {
-            a = document.getElementById('score_head').getElementsByClassName('underlined')
-            if(a.length > 0)a[0].classList.remove('underlined');
-            event.target.classList.add('underlined');
-            if(param == app.scores_last_sort){app.scores.reverse()}
-            else (
-                this.scores.sort(function(a, b){
-                    return b[1][param]-a[1][param]
-                })
-            )
-            app.scores_last_sort = param;
-            if(app.selected_player)setTimeout(function () {document.querySelectorAll(`[data-sid*="${app.selected_player}"]`)[0].scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            })},100)
-            
+            if(event.target.type != "button"){
+                a = document.getElementById('score_head').getElementsByClassName('underlined')
+                if(a.length > 0)a[0].classList.remove('underlined');
+                event.target.classList.add('underlined');
+                if(param == app.scores_last_sort){app.scores.reverse()}
+                else (
+                    this.scores.sort(function(a, b){
+                        return b[1][param]-a[1][param]
+                    })
+                )
+                app.scores_last_sort = param;
+                if(app.selected_player)setTimeout(function () {document.querySelectorAll(`[data-sid*="${app.selected_player}"]`)[0].scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                })},100)
+            }
+            else {
+                if(event.target.classList[0] == "underlined"){
+                    event.target.classList.remove('underlined');
+                    for(p of app.scores){
+                        p[1].score -= p[1].games_tied
+                    }
+                }
+                else 
+                {
+                    event.target.classList.add('underlined');
+                    for(p of app.scores){
+                        p[1].score += p[1].games_tied
+                    }
+                }
+                if(app.scores_last_sort == "score")
+                    this.scores.sort(function(a, b){
+                        return b[1][param]-a[1][param]
+                    })
+            }
         },
         showScoreboard : function (){
             if(this.active_panel=="score" && this.scores){
@@ -448,15 +468,13 @@ var app = new Vue({
                     if(!this.downloaded[store.state.logs_time_range].scores){
                         this.loading = true;
                         return fetch(uri + '/scores/'+store.state.logs_time_range).then(r => r.json()).then(r => {
-                            /*for(p_id in r){
-                                r[p_id].score = (r[p_id].games_won*2) - (r[p_id].games_lost*2) + (r[p_id].games_tied)
-                            }*/
                             for(p_id in r){
-                                r[p_id].score = (r[p_id].games_won*2) - (r[p_id].games_lost*2)
+                                r[p_id].score = (r[p_id].games_won*2) - (r[p_id].games_lost*2) + (r[p_id].games_tied)
                             }
-                            //testowo 0 pkt za remis
                             r = sortObject(r,'score')
                             app.scores_last_sort='score';
+                            $("#score_head div:last-child")[0].classList.add("underlined")
+                            $("#score_head div:last-child input")[0].classList.add("underlined")
                             this.loading = false;
                             if(r.length == 0)r = false;     
                             this.downloaded[store.state.logs_time_range].scores = r;  
