@@ -22,18 +22,26 @@ module.exports = async (req, res) => {
         else {
             if(option == 'diff'){
                 let p1 = fetch("https://logs.tf/api/v1/log?title=tf2pickup.pl&limit=10000")
-                    .then(r => r.json()).then(r => {
-                        let logs = [];
-                        for(let l of r.logs){
-                            logs.push(`${l.id}`)
-                        }
-                        return logs;
-                    })  
-                    
-                let p2 = db.collection('logs').distinct('_id', {}, {})
-        
-                Promise.all([p1,p2]).then(r => {
-                    let diff = r[0].filter(x => !r[1].includes(x));
+				.then(r => r.json()).then(r => {
+					let logs = [];
+					for(let l of r.logs){
+						logs.push(`${l.id}`)
+					}
+					return logs;
+				})  
+				let p2 = fetch("https://api.tf2pickup.pl/games?limit=100")
+				.then(r => r.json()).then(r => {
+					let logs = [];
+					for(let l of r.results){
+						if(l.logsUrl)logs.push(l.logsUrl.slice(15))
+					}
+					return logs;
+				})
+				let p3 = db.collection('logs').distinct('_id', {}, {})
+                Promise.all([p1,p2,p3]).then(r => {
+					let diff1 = r[0].filter(x => !r[2].includes(x));
+                    let diff2 = r[1].filter(x => !r[2].includes(x));
+					let diff = diff1.concat(diff2)
                     res.status(200).json(diff);
                 })
             }

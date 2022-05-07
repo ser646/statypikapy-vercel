@@ -36,11 +36,11 @@ module.exports = async (req, res) => {
                 res.json({status : 'Success'});
             }).catch(e => {
                 if(e.code == 11000)e = "id already exists";
-                res.json({status : 'Failure', error : e});
+                res.json({status : 'MongoDB Failure', error : e});
                 console.log(e)
             })
         }).catch(e => {
-            res.json({status : 'Failure', error : e});
+            res.json({status : 'Logs.tf failure', error : e});
             console.log(e)
         })
         else res.status(400).json({status : 'Failure', error : "no id"});

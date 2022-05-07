@@ -296,14 +296,16 @@ var app = new Vue({
             fetch(uri+'/logs/diff').then(r => r.json()).then(r => {
                 app.logs_to_download = r;
                 app.logs_to_download_total = r.length
-                if(r.length > 0)
-                    for(i = 0;i<r.length;i++)app.downloadLog(r[i])
+                if(r.length > 0){
+                    for(i = 0;i<r.length;i++){
+                        app.downloadLog(r[i]);
+                    }
+                }
                 else {
                     app.main();
                     document.getElementById('update_info').innerText='All logs up to date!';
                     console.log('All logs up to date!')
                     app.fully_loaded = true
-
                 };
             })
         },
